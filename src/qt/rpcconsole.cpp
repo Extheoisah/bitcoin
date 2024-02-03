@@ -1227,7 +1227,7 @@ void RPCConsole::updateDetailWidget()
     // This check fails for example if the lock was busy and
     // nodeStateStats couldn't be fetched.
     if (stats->fNodeStateStatsAvailable) {
-        ui->timeoffset->setText(GUIUtil::formatTimeOffset(stats->nodeStateStats.time_offset));
+        ui->timeoffset->setText(GUIUtil::formatTimeOffset(stats->nodeStateStats.time_offset.count()));
         ui->peerServices->setText(GUIUtil::formatServicesStr(stats->nodeStateStats.their_services));
         // Sync height is init to -1
         if (stats->nodeStateStats.nSyncHeight > -1) {
