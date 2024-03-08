@@ -84,19 +84,19 @@ struct {
  *        bound of the range.
  * @param const CAmount& cost_of_change This is the cost of creating and spending a change output.
  *        This plus selection_target is the upper bound of the range.
- * @param int max_selection_weight The maximum allowed weight for a selection result to be valid.
+ * @param int64_t max_selection_weight The maximum allowed weight for a selection result to be valid.
  * @returns The result of this coin selection algorithm, or std::nullopt
  */
 
 static const size_t TOTAL_TRIES = 100000;
 
 util::Result<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_pool, const CAmount& selection_target, const CAmount& cost_of_change,
-                                             int max_selection_weight)
+                                             int64_t max_selection_weight)
 {
     SelectionResult result(selection_target, SelectionAlgorithm::BNB);
     CAmount curr_value = 0;
     std::vector<size_t> curr_selection; // selected utxo indexes
-    int curr_selection_weight = 0; // sum of selected utxo weight
+    int64_t curr_selection_weight = 0; // sum of selected utxo weight
 
     // Calculate curr_available_value
     CAmount curr_available_value = 0;
@@ -319,10 +319,10 @@ util::Result<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_pool
  *        group with multiple as a heavier UTXO with the combined amount here.)
  * @param const CAmount& selection_target This is the minimum amount that we need for the transaction without considering change.
  * @param const CAmount& change_target The minimum budget for creating a change output, by which we increase the selection_target.
- * @param int max_selection_weight The maximum allowed weight for a selection result to be valid.
+ * @param int64_t max_selection_weight The maximum allowed weight for a selection result to be valid.
  * @returns The result of this coin selection algorithm, or std::nullopt
  */
-util::Result<SelectionResult> CoinGrinder(std::vector<OutputGroup>& utxo_pool, const CAmount& selection_target, CAmount change_target, int max_selection_weight)
+util::Result<SelectionResult> CoinGrinder(std::vector<OutputGroup>& utxo_pool, const CAmount& selection_target, CAmount change_target, int64_t max_selection_weight)
 {
     std::sort(utxo_pool.begin(), utxo_pool.end(), descending_effval_weight);
     // The sum of UTXO amounts after this UTXO index, e.g. lookahead[5] = Σ(UTXO[6+].amount)
@@ -358,8 +358,8 @@ util::Result<SelectionResult> CoinGrinder(std::vector<OutputGroup>& utxo_pool, c
     CAmount best_selection_amount = MAX_MONEY;
 
     // The weight of the currently selected input set, and the weight of the best selection
-    int curr_weight = 0;
-    int best_selection_weight = max_selection_weight; // Tie is fine, because we prefer lower selection amount
+    int64_t curr_weight = 0;
+    int64_t best_selection_weight = max_selection_weight; // Tie is fine, because we prefer lower selection amount
 
     // Whether the input sets generated during this search have exceeded the maximum transaction weight at any point
     bool max_tx_weight_exceeded = false;
@@ -535,7 +535,7 @@ public:
 };
 
 util::Result<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& utxo_pool, CAmount target_value, CAmount change_fee, FastRandomContext& rng,
-                                             int max_selection_weight)
+                                             int64_t max_selection_weight)
 {
     SelectionResult result(target_value, SelectionAlgorithm::SRD);
     std::priority_queue<OutputGroup, std::vector<OutputGroup>, MinOutputGroupComparator> heap;
@@ -648,7 +648,7 @@ static void ApproximateBestSubset(FastRandomContext& insecure_rand, const std::v
 }
 
 util::Result<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue,
-                                             CAmount change_target, FastRandomContext& rng, int max_selection_weight)
+                                             CAmount change_target, FastRandomContext& rng, int64_t max_selection_weight)
 {
     SelectionResult result(nTargetValue, SelectionAlgorithm::KNAPSACK);
 

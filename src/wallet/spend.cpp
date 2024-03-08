@@ -692,7 +692,7 @@ util::Result<SelectionResult> ChooseSelectionResult(interfaces::Chain& chain, co
     };
 
     // Maximum allowed weight for selected coins.
-    int max_selection_weight = MAX_STANDARD_TX_WEIGHT - (coin_selection_params.tx_noinputs_size * WITNESS_SCALE_FACTOR);
+    int64_t max_selection_weight = MAX_STANDARD_TX_WEIGHT - static_cast<int64_t>(coin_selection_params.tx_noinputs_size * WITNESS_SCALE_FACTOR);
 
     // SFFO frequently causes issues in the context of changeless input sets: skip BnB when SFFO is active
     if (!coin_selection_params.m_subtract_fee_outputs) {
